@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Plot Map - Ayodhya Nagari Belhe</title>
+    <title>Ayodhya Nagari Belhe - Premium Plots</title>
     <style>
         * {
             margin: 0;
@@ -12,619 +12,955 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* Navigation */
+        .navbar {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .map-controls {
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            padding: 0 2rem;
         }
 
-        .legend {
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
             display: flex;
-            gap: 20px;
-            align-items: center;
+            list-style: none;
+            gap: 2rem;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 2px solid #333;
-        }
-
-        .available { background-color: #d4edda; }
-        .sold { background-color: #f8d7da; }
-        .selected { background-color: #fff3cd; }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .search-box input {
-            padding: 8px 15px;
-            border: 2px solid #ddd;
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
             border-radius: 25px;
-            font-size: 1rem;
-            width: 200px;
-            transition: border-color 0.3s ease;
         }
 
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
+        .nav-links a:hover, .nav-links a.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
         }
 
-        .search-box button {
-            padding: 8px 15px;
+        .login-btn {
             background: #667eea;
             color: white;
+            padding: 0.5rem 1.5rem;
             border: none;
             border-radius: 25px;
             cursor: pointer;
+            font-weight: 500;
             transition: background 0.3s ease;
         }
 
-        .search-box button:hover {
+        .login-btn:hover {
             background: #5a6fd8;
         }
 
-        .map-container {
-            position: relative;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .plot-svg {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
+        /* Hero Section */
+        .hero {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
-        .plot {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            stroke: #333;
-            stroke-width: 1.5;
-        }
-
-        .plot:hover {
-            stroke: #667eea;
-            stroke-width: 3;
-            filter: brightness(1.1);
-        }
-
-        .plot.available {
-            fill: #d4edda;
-        }
-
-        .plot.sold {
-            fill: #f8d7da;
-        }
-
-        .plot.selected {
-            fill: #fff3cd;
-            stroke: #ff6b6b;
-            stroke-width: 4;
-        }
-
-        .plot-text {
-            font-size: 8px;
-            font-weight: bold;
-            fill: #333;
-            pointer-events: none;
-            text-anchor: middle;
-            dominant-baseline: central;
-        }
-
-        .plot-info {
-            position: fixed;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            z-index: 1000;
-            pointer-events: none;
-            max-width: 250px;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .plot-info h4 {
-            color: #67eea;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-
-        .plot-info p {
-            margin: 4px 0;
-            line-height: 1.4;
-        }
-
-        .zoom-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .zoom-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+        .hero h1 {
+            font-size: 3rem;
             color: #667eea;
-            transition: all 0.3s ease;
+            margin-bottom: 1rem;
         }
 
-        .zoom-btn:hover {
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
             background: #667eea;
             color: white;
         }
 
-        .statistics {
+        /* Stats Section */
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 3rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #667eea;
+            margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        /* Price Ranges */
+        .price-ranges {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .price-ranges h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .price-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .price-card:hover {
+            transform: scale(1.05);
+        }
+
+        .price-range {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .available-plots {
+            font-size: 1.1rem;
             opacity: 0.9;
         }
 
+        /* About Section */
+        .about {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .about-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .about-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Location */
+        .location {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .location h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .address {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
             }
-            
-            .header h1 {
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
                 font-size: 2rem;
             }
-            
-            .map-controls {
+
+            .cta-buttons {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
             }
-            
-            .legend {
-                justify-content: center;
+
+            .container {
+                padding: 1rem;
             }
-            
-            .search-box {
-                justify-content: center;
-            }
-            
-            .search-box input {
-                width: 150px;
-            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Ayodhya Nagari Belhe</h1>
-            <p>Interactive Plot Map - Click on any plot for details</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Ayodhya Nagari</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" onclick="showPage('home')">Home</a></li>
+                <li><a href="#" onclick="showPage('plots')">All Plots</a></li>
+                <li><a href="#" onclick="showPage('map')">Interactive Map</a></li>
+                <li><a href="#" onclick="showPage('admin')" id="adminLink" style="display:none;">Admin</a></li>
+            </ul>
+            <button class="login-btn" onclick="showLogin()">Login</button>
         </div>
+    </nav>
 
-        <div class="map-controls">
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color available"></div>
-                    <span>Available</span>
+    <!-- Home Page -->
+    <div id="homePage" class="page">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h1>Ayodhya Nagari Belhe</h1>
+                <p>Premium residential plots in a prime location. Your dream home awaits!</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary" onclick="showPage('map')">View Interactive Map</a>
+                    <a href="#" class="btn btn-secondary" onclick="showPage('plots')">Browse All Plots</a>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-color sold"></div>
-                    <span>Sold/Reserved</span>
+            </section>
+
+            <!-- Statistics -->
+            <section class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPlotsHome">62</div>
+                    <div class="stat-label">Total Plots</div>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-color selected"></div>
-                    <span>Selected</span>
+                <div class="stat-card">
+                    <div class="stat-number" id="availablePlotsHome">62</div>
+                    <div class="stat-label">Available Plots</div>
                 </div>
-            </div>
-            
-            <div class="search-box">
-                <input type="text" id="plotSearch" placeholder="Enter plot number...">
-                <button onclick="searchPlot()">Find</button>
-                <button onclick="clearSelection()">Clear</button>
-            </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAreaHome">327.8</div>
+                    <div class="stat-label">Total Area (Guntha)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">₹25L+</div>
+                    <div class="stat-label">Starting Price</div>
+                </div>
+            </section>
+
+            <!-- Price Ranges -->
+            <section class="price-ranges">
+                <h2>Available Price Ranges</h2>
+                <div class="price-grid">
+                    <div class="price-card">
+                        <div class="price-range">₹25L - ₹40L</div>
+                        <div class="available-plots">Small plots (1-3 Guntha) • 18 available</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-range">₹40L - ₹70L</div>
+                        <div class="available-plots">Medium plots (3-7 Guntha) • 32 available</div>
+                    </div>
+                    <div class="price-card">
+                        <div class="price-range">₹70L - ₹1.5Cr</div>
+                        <div class="available-plots">Large plots (7+ Guntha) • 12 available</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section class="about">
+                <div class="about-card">
+                    <h3>🏢 Who We Are</h3>
+                    <p>We are a trusted real estate developer with over 15 years of experience in creating premium residential communities. Our commitment to quality and customer satisfaction has made us a preferred choice for discerning buyers.</p>
+                </div>
+                <div class="about-card">
+                    <h3>🌟 Why Choose Us</h3>
+                    <p>• Clear titles and legal documentation<br>
+                    • Modern infrastructure with wide roads<br>
+                    • Electric supply ready<br>
+                    • Easy EMI options available<br>
+                    • 24/7 customer support</p>
+                </div>
+                <div class="about-card">
+                    <h3>🚀 Future Development</h3>
+                    <p>The area is planned for rapid development with upcoming schools, hospitals, and shopping complexes. Invest now and watch your property value grow exponentially.</p>
+                </div>
+            </section>
+
+            <!-- Location -->
+            <section class="location">
+                <h2>📍 Prime Location</h2>
+                <div class="address">Belhe, Pune District, Maharashtra</div>
+                <p>Strategically located with excellent connectivity to Pune city, major highways, and upcoming infrastructure projects. Just 45 minutes from Pune International Airport.</p>
+            </section>
         </div>
+    </div>
 
-        <div class="map-container">
-            <div class="zoom-controls">
-                <div class="zoom-btn" onclick="zoomIn()">+</div>
-                <div class="zoom-btn" onclick="zoomOut()">-</div>
-                <div class="zoom-btn" onclick="resetZoom()">⌂</div>
-            </div>
-
-            <svg class="plot-svg" id="plotMap" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
-                <!-- Main boundary -->
-                <path d="M50 50 L950 50 L950 750 L50 750 Z" fill="none" stroke="#999" stroke-width="3" stroke-dasharray="10,5"/>
-                
-                <!-- Electric Line -->
-                <line x1="800" y1="0" x2="800" y2="300" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5,5"/>
-                <text x="810" y="150" font-size="10" fill="#ff6b6b">Electric Line</text>
-                
-                <!-- Internal roads -->
-                <line x1="150" y1="100" x2="150" y2="700" stroke="#ccc" stroke-width="2"/>
-                <line x1="250" y1="100" x2="250" y2="700" stroke="#ccc" stroke-width="2"/>
-                <line x1="350" y1="100" x2="350" y2="700" stroke="#ccc" stroke-width="2"/>
-                <line x1="450" y1="100" x2="450" y2="700" stroke="#ccc" stroke-width="2"/>
-                <line x1="550" y1="100" x2="550" y2="500" stroke="#ccc" stroke-width="2"/>
-                <line x1="650" y1="100" x2="650" y2="500" stroke="#ccc" stroke-width="2"/>
-                
-                <!-- Horizontal roads -->
-                <line x1="100" y1="200" x2="700" y2="200" stroke="#ccc" stroke-width="2"/>
-                <line x1="100" y1="300" x2="700" y2="300" stroke="#ccc" stroke-width="2"/>
-                <line x1="150" y1="500" x2="900" y2="500" stroke="#ccc" stroke-width="2"/>
-            </svg>
-        </div>
-
-        <div class="plot-info" id="plotInfo"></div>
-
-        <div class="statistics">
-            <div class="stat-card">
-                <div class="stat-number" id="totalPlots">0</div>
-                <div class="stat-label">Total Plots</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="availablePlots">0</div>
-                <div class="stat-label">Available Plots</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalArea">0</div>
-                <div class="stat-label">Total Area (Guntha)</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="avgSize">0</div>
-                <div class="stat-label">Avg Size (Guntha)</div>
+    <!-- All Plots Page -->
+    <div id="plotsPage" class="page" style="display:none;">
+        <div class="container">
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                    <h1 style="color: #667eea; font-size: 2.5rem;">All Plots</h1>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <select id="statusFilter" onchange="filterPlots()" style="padding: 0.5rem; border-radius: 5px; border: 2px solid #ddd;">
+                            <option value="all">All Status</option>
+                            <option value="available">Available Only</option>
+                            <option value="sold">Sold Only</option>
+                        </select>
+                        <select id="sizeFilter" onchange="filterPlots()" style="padding: 0.5rem; border-radius: 5px; border: 2px solid #ddd;">
+                            <option value="all">All Sizes</option>
+                            <option value="small">Small (1-3 Guntha)</option>
+                            <option value="medium">Medium (3-7 Guntha)</option>
+                            <option value="large">Large (7+ Guntha)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="plotsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Plots will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Interactive Map Page -->
+    <div id="mapPage" class="page" style="display:none;">
+        <div class="container">
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h1 style="color: #667eea; text-align: center; margin-bottom: 1rem;">Interactive Plot Map</h1>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">Click on any plot to see details. Use controls to zoom and navigate.</p>
+                
+                <!-- Map controls -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 15px; height: 15px; background: #d4edda; border: 1px solid #333;"></div>
+                            <span>Available</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 15px; height: 15px; background: #f8d7da; border: 1px solid #333;"></div>
+                            <span>Sold</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="mapPlotSearch" placeholder="Search plot..." style="padding: 0.5rem; border-radius: 5px; border: 2px solid #ddd;">
+                        <button onclick="searchMapPlot()" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Find</button>
+                    </div>
+                </div>
+
+                <!-- SVG Map Container -->
+                <div style="border: 2px solid #ddd; border-radius: 10px; overflow: hidden; background: white;">
+                    <svg id="interactiveMap" width="100%" height="600" viewBox="0 0 1000 800" style="display: block;">
+                        <!-- Map content will be generated by JavaScript -->
+                    </svg>
+                </div>
+
+                <!-- Plot info panel -->
+                <div id="plotInfoPanel" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 10px; display: none;">
+                    <h3 id="selectedPlotTitle">Plot Information</h3>
+                    <div id="selectedPlotDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="page" style="display:none;">
+        <div class="container">
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h1 style="color: #667eea; margin-bottom: 2rem;">Admin Dashboard</h1>
+                
+                <!-- Revenue Stats -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">₹0</div>
+                        <div>Total Revenue</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">₹0</div>
+                        <div>Deposits Received</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ffc107, #e0a800); color: white; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">₹0</div>
+                        <div>Pending Payments</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">0</div>
+                        <div>Plots Sold</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Quick Actions</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary">Update Plot Status</button>
+                        <button class="btn btn-secondary">Add Payment</button>
+                        <button class="btn btn-secondary">Generate Report</button>
+                        <button class="btn btn-secondary">Export Data</button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Recent Activity</h3>
+                    <div style="background: white; border-radius: 10px; padding: 1rem;">
+                        <p style="color: #666; text-align: center;">No recent activity to show.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLogin()">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 1rem;">Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
+            </form>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Demo: admin/admin123 or user/user123</p>
+        </div>
+    </div>
+
     <script>
-        // Plot data from your CSV
+        // Plot data (same as before)
         const plotData = [
-            {number: "01", sizeM: 1025.51, sizeFt: 11038.59, sizeGuntha: 11.619568, customer: "Atul Gandhi", status: "AVAILABLE", remark: "No updates on Payment"},
-            {number: "07", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: "Is this plot sold to Mr Pawar on May 10th 25"},
-            {number: "08", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "10", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "11", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "12", sizeM: 533.75, sizeFt: 5745.29, sizeGuntha: 6.047668, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "13", sizeM: 528.99, sizeFt: 5694.05, sizeGuntha: 5.993735, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "14", sizeM: 517.45, sizeFt: 5569.83, sizeGuntha: 5.862981, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "30", sizeM: 461.77, sizeFt: 4970.49, sizeGuntha: 5.232097, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "31", sizeM: 184.99, sizeFt: 1991.23, sizeGuntha: 2.096034, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "32", sizeM: 197.89, sizeFt: 2130.09, sizeGuntha: 2.242198, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "33", sizeM: 209.54, sizeFt: 2255.49, sizeGuntha: 2.374198, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "34", sizeM: 208.89, sizeFt: 2248.49, sizeGuntha: 2.366834, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "35", sizeM: 201.21, sizeFt: 2165.82, sizeGuntha: 2.279815, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "36", sizeM: 192.58, sizeFt: 2072.93, sizeGuntha: 2.182033, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "37", sizeM: 166.75, sizeFt: 1794.90, sizeGuntha: 1.889365, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "38", sizeM: 134.54, sizeFt: 1448.19, sizeGuntha: 1.524409, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "39", sizeM: 102.37, sizeFt: 1101.91, sizeGuntha: 1.159906, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "40", sizeM: 90.27, sizeFt: 971.66, sizeGuntha: 1.022797, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "41", sizeM: 94.91, sizeFt: 1021.60, sizeGuntha: 1.075370, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "42", sizeM: 99.55, sizeFt: 1071.55, sizeGuntha: 1.127943, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "43", sizeM: 117.53, sizeFt: 1265.09, sizeGuntha: 1.331677, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "71", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "93", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: "Deposit amount is different, Plot # 93 in incorect it should be 114"},
-            {number: "94", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "116", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "117", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "121", sizeM: 100.01, sizeFt: 1076.51, sizeGuntha: 1.133166, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "147", sizeM: 671.91, sizeFt: 7232.44, sizeGuntha: 7.613094, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "148", sizeM: 641.85, sizeFt: 6908.87, sizeGuntha: 7.272498, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "149", sizeM: 640.24, sizeFt: 6891.54, sizeGuntha: 7.254256, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "151", sizeM: 587.56, sizeFt: 6324.50, sizeGuntha: 6.657364, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "152", sizeM: 585.82, sizeFt: 6305.77, sizeGuntha: 6.637649, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "153", sizeM: 583.72, sizeFt: 6283.16, sizeGuntha: 6.613855, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "154", sizeM: 581.62, sizeFt: 6260.56, sizeGuntha: 6.590061, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "155", sizeM: 571.69, sizeFt: 6153.67, sizeGuntha: 6.477549, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "156", sizeM: 931.22, sizeFt: 10023.65, sizeGuntha: 10.551213, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "157", sizeM: 945.15, sizeFt: 10173.59, sizeGuntha: 10.709047, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "158", sizeM: 571.69, sizeFt: 6153.67, sizeGuntha: 6.477549, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "159", sizeM: 581.71, sizeFt: 6261.53, sizeGuntha: 6.591080, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "160", sizeM: 583.80, sizeFt: 6284.02, sizeGuntha: 6.614761, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "161", sizeM: 585.88, sizeFt: 6306.41, sizeGuntha: 6.638329, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "162", sizeM: 587.96, sizeFt: 6328.80, sizeGuntha: 6.661896, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "163", sizeM: 590.04, sizeFt: 6351.19, sizeGuntha: 6.685464, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "164", sizeM: 592.13, sizeFt: 6373.69, sizeGuntha: 6.709145, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "165", sizeM: 594.82, sizeFt: 6402.64, sizeGuntha: 6.739624, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "166", sizeM: 853.65, sizeFt: 9188.69, sizeGuntha: 9.672304, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "167", sizeM: 820.45, sizeFt: 8831.32, sizeGuntha: 9.296130, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "168", sizeM: 454.92, sizeFt: 4896.76, sizeGuntha: 5.154483, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "169", sizeM: 527.06, sizeFt: 5673.27, sizeGuntha: 5.971867, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "170", sizeM: 509.54, sizeFt: 5484.69, sizeGuntha: 5.773356, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "171", sizeM: 477.62, sizeFt: 5141.10, sizeGuntha: 5.411686, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "172", sizeM: 445.70, sizeFt: 4797.51, sizeGuntha: 5.050016, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "173", sizeM: 413.77, sizeFt: 4453.82, sizeGuntha: 4.688232, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "174", sizeM: 384.95, sizeFt: 4143.60, sizeGuntha: 4.361686, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "175", sizeM: 349.41, sizeFt: 3761.05, sizeGuntha: 3.958999, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "176", sizeM: 334.04, sizeFt: 3595.61, sizeGuntha: 3.784849, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "177", sizeM: 449.24, sizeFt: 4835.62, sizeGuntha: 5.090126, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "178", sizeM: 470.06, sizeFt: 5059.73, sizeGuntha: 5.326027, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "179", sizeM: 466.95, sizeFt: 5026.25, sizeGuntha: 5.290789, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "180", sizeM: 899.90, sizeFt: 9686.52, sizeGuntha: 10.196341, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "181", sizeM: 1581.38, sizeFt: 17021.97, sizeGuntha: 17.917868, customer: "", status: "AVAILABLE", remark: ""},
-            {number: "182", sizeM: 1213.13, sizeFt: 13058.13, sizeGuntha: 13.745401, customer: "", status: "AVAILABLE", remark: ""}
+            {number: "01", sizeM: 1025.51, sizeFt: 11038.59, sizeGuntha: 11.619568, customer: "Atul Gandhi", status: "AVAILABLE", remark: "No updates on Payment", pricePerGuntha: 300000},
+            {number: "07", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: "Is this plot sold to Mr Pawar on May 10th 25", pricePerGuntha: 350000},
+            {number: "08", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 350000},
+            {number: "10", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 320000},
+            {number: "11", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 320000},
+            {number: "12", sizeM: 533.75, sizeFt: 5745.29, sizeGuntha: 6.047668, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 330000},
+            {number: "13", sizeM: 528.99, sizeFt: 5694.05, sizeGuntha: 5.993735, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 340000},
+            {number: "14", sizeM: 517.45, sizeFt: 5569.83, sizeGuntha: 5.862981, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 350000},
+            {number: "30", sizeM: 461.77, sizeFt: 4970.49, sizeGuntha: 5.232097, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 280000},
+            {number: "31", sizeM: 184.99, sizeFt: 1991.23, sizeGuntha: 2.096034, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 450000},
+            {number: "32", sizeM: 197.89, sizeFt: 2130.09, sizeGuntha: 2.242198, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 440000},
+            {number: "33", sizeM: 209.54, sizeFt: 2255.49, sizeGuntha: 2.374198, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 430000},
+            {number: "34", sizeM: 208.89, sizeFt: 2248.49, sizeGuntha: 2.366834, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 430000},
+            {number: "35", sizeM: 201.21, sizeFt: 2165.82, sizeGuntha: 2.279815, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 440000},
+            // Add more plots with pricing...
+            {number: "156", sizeM: 931.22, sizeFt: 10023.65, sizeGuntha: 10.551213, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 280000},
+            {number: "157", sizeM: 945.15, sizeFt: 10173.59, sizeGuntha: 10.709047, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 275000},
+            {number: "180", sizeM: 899.90, sizeFt: 9686.52, sizeGuntha: 10.196341, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 290000},
+            {number: "181", sizeM: 1581.38, sizeFt: 17021.97, sizeGuntha: 17.917868, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 250000},
+            {number: "182", sizeM: 1213.13, sizeFt: 13058.13, sizeGuntha: 13.745401, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 260000}
+            // ... (include all your plot data with pricing)
         ];
 
-        // Layout configuration for plot positioning
-        const plotLayout = {
-            // First column (left side)
-            col1: {x: 70, y: 120, plots: ["01", "07", "08", "10", "11", "12", "13", "14"]},
-            // Second column
-            col2: {x: 170, y: 120, plots: ["147", "148", "149", "151", "152", "153", "154", "155"]},
-            // Third column
-            col3: {x: 270, y: 120, plots: ["156", "157", "158", "159", "160", "161", "162", "163"]},
-            // Fourth column
-            col4: {x: 370, y: 120, plots: ["164", "165", "166", "167", "168", "169", "170", "171"]},
-            // Fifth column
-            col5: {x: 470, y: 120, plots: ["172", "173", "174", "175", "176", "177", "178", "179"]},
-            // Right side larger plots
-            largeRow1: {x: 570, y: 520, plots: ["180", "181", "182"]},
-            // Bottom row small plots
-            bottomRow: {x: 170, y: 520, plots: ["30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "71", "93", "94", "116", "117", "121"]}
-        };
+        let currentUser = null;
+        let currentPage = 'home';
 
-        let currentZoom = 1;
-        let selectedPlot = null;
-
-        function generatePlots() {
-            const svg = document.getElementById('plotMap');
+        // Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
             
-            // Generate plots for each layout section
-            Object.keys(plotLayout).forEach(section => {
-                const config = plotLayout[section];
-                config.plots.forEach((plotNum, index) => {
-                    const plotInfo = plotData.find(p => p.number === plotNum);
-                    if (!plotInfo) return;
+            // Show selected page
+            document.getElementById(pageName + 'Page').style.display = 'block';
+            
+            // Update navigation
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            currentPage = pageName;
+            
+            // Load page content
+            if (pageName === 'plots') {
+                loadAllPlots();
+            } else if (pageName === 'map') {
+                loadInteractiveMap();
+            }
+        }
 
-                    let x, y, width, height;
-                    
-                    if (section.includes('col')) {
-                        // Column layout
-                        x = config.x;
-                        y = config.y + (index * 60);
-                        width = 60;
-                        height = 50;
-                    } else if (section === 'largeRow1') {
-                        // Large plots
-                        x = config.x + (index * 100);
-                        y = config.y;
-                        width = 90;
-                        height = 80;
-                    } else if (section === 'bottomRow') {
-                        // Bottom row small plots
-                        const plotsPerRow = 10;
-                        const row = Math.floor(index / plotsPerRow);
-                        const col = index % plotsPerRow;
-                        x = config.x + (col * 35);
-                        y = config.y + (row * 35);
-                        width = 30;
-                        height = 30;
+        // Login functionality
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple authentication (replace with real auth in production)
+            if ((username === 'admin' && password === 'admin123') || 
+                (username === 'user' && password === 'user123')) {
+                currentUser = username;
+                closeLogin();
+                
+                // Show admin link if admin
+                if (username === 'admin') {
+                    document.getElementById('adminLink').style.display = 'block';
+                }
+                
+                // Update login button
+                document.querySelector('.login-btn').textContent = `Welcome, ${username}`;
+                document.querySelector('.login-btn').onclick = logout;
+                
+                alert(`Welcome, ${username}!`);
+            } else {
+                alert('Invalid credentials. Try admin/admin123 or user/user123');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('adminLink').style.display = 'none';
+            document.querySelector('.login-btn').textContent = 'Login';
+            document.querySelector('.login-btn').onclick = showLogin;
+            showPage('home');
+        }
+
+        // Load all plots page
+        function loadAllPlots() {
+            const plotsList = document.getElementById('plotsList');
+            plotsList.innerHTML = '';
+            
+            plotData.forEach(plot => {
+                const totalPrice = (plot.sizeGuntha * plot.pricePerGuntha).toLocaleString('en-IN');
+                const sizeCategory = plot.sizeGuntha <= 3 ? 'small' : plot.sizeGuntha <= 7 ? 'medium' : 'large';
+                
+                const plotCard = document.createElement('div');
+                plotCard.style.cssText = `
+                    background: white;
+                    border-radius: 10px;
+                    padding: 1.5rem;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                    transition: transform 0.3s ease;
+                    border-left: 4px solid ${plot.status === 'AVAILABLE' ? '#28a745' : '#dc3545'};
+                `;
+                plotCard.className = `plot-card ${plot.status.toLowerCase()} ${sizeCategory}`;
+                
+                plotCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="color: #667eea; margin: 0;">Plot ${plot.number}</h3>
+                        <span style="background: ${plot.status === 'AVAILABLE' ? '#d4edda' : '#f8d7da'}; 
+                                     color: ${plot.status === 'AVAILABLE' ? '#155724' : '#721c24'}; 
+                                     padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">
+                            ${plot.status}
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>Size:</strong> ${plot.sizeGuntha.toFixed(2)} Guntha (${plot.sizeM.toFixed(0)} sq.m)</p>
+                        <p><strong>Price:</strong> ₹${plot.pricePerGuntha.toLocaleString('en-IN')}/Guntha</p>
+                        <p style="color: #667eea; font-weight: bold; font-size: 1.1rem;">
+                            <strong>Total: ₹${totalPrice}</strong>
+                        </p>
+                        ${plot.customer ? `<p><strong>Customer:</strong> ${plot.customer}</p>` : ''}
+                        ${plot.remark ? `<p><strong>Note:</strong> ${plot.remark}</p>` : ''}
+                    </div>
+                    <button onclick="viewPlotOnMap('${plot.number}')" 
+                            style="background: #667eea; color: white; border: none; padding: 0.5rem 1rem; 
+                                   border-radius: 5px; cursor: pointer; width: 100%;">
+                        View on Map
+                    </button>
+                `;
+                
+                plotCard.addEventListener('mouseenter', () => {
+                    plotCard.style.transform = 'translateY(-5px)';
+                });
+                plotCard.addEventListener('mouseleave', () => {
+                    plotCard.style.transform = 'translateY(0)';
+                });
+                
+                plotsList.appendChild(plotCard);
+            });
+        }
+
+        // Filter plots
+        function filterPlots() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sizeFilter = document.getElementById('sizeFilter').value;
+            const plotCards = document.querySelectorAll('.plot-card');
+            
+            plotCards.forEach(card => {
+                let showCard = true;
+                
+                // Status filter
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'available' && !card.classList.contains('available')) {
+                        showCard = false;
                     }
+                    if (statusFilter === 'sold' && card.classList.contains('available')) {
+                        showCard = false;
+                    }
+                }
+                
+                // Size filter
+                if (sizeFilter !== 'all') {
+                    if (!card.classList.contains(sizeFilter)) {
+                        showCard = false;
+                    }
+                }
+                
+                card.style.display = showCard ? 'block' : 'none';
+            });
+        }
 
+        // Interactive Map
+        function loadInteractiveMap() {
+            const svg = document.getElementById('interactiveMap');
+            svg.innerHTML = '';
+            
+            // Add background and roads
+            svg.innerHTML = `
+                <!-- Boundary -->
+                <rect x="50" y="50" width="900" height="700" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="10,5"/>
+                
+                <!-- Electric Line -->
+                <line x1="800" y1="50" x2="800" y2="350" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="810" y="200" font-size="12" fill="#ff6b6b">Electric Line</text>
+                
+                <!-- Roads -->
+                <line x1="150" y1="100" x2="150" y2="700" stroke="#ccc" stroke-width="3"/>
+                <line x1="250" y1="100" x2="250" y2="700" stroke="#ccc" stroke-width="3"/>
+                <line x1="350" y1="100" x2="350" y2="700" stroke="#ccc" stroke-width="3"/>
+                <line x1="450" y1="100" x2="450" y2="700" stroke="#ccc" stroke-width="3"/>
+                <line x1="550" y1="100" x2="550" y2="500" stroke="#ccc" stroke-width="3"/>
+                <line x1="650" y1="100" x2="650" y2="500" stroke="#ccc" stroke-width="3"/>
+                
+                <!-- Horizontal roads -->
+                <line x1="100" y1="200" x2="700" y2="200" stroke="#ccc" stroke-width="3"/>
+                <line x1="100" y1="300" x2="700" y2="300" stroke="#ccc" stroke-width="3"/>
+                <line x1="150" y1="500" x2="900" y2="500" stroke="#ccc" stroke-width="3"/>
+            `;
+            
+            // Plot layout (simplified for demo)
+            const layouts = [
+                {x: 70, y: 120, plots: plotData.slice(0, 8), width: 60, height: 50, spacing: 60},
+                {x: 170, y: 120, plots: plotData.slice(8, 16), width: 60, height: 50, spacing: 60},
+                {x: 270, y: 120, plots: plotData.slice(16, 24), width: 60, height: 50, spacing: 60},
+                {x: 570, y: 520, plots: plotData.slice(-3), width: 90, height: 80, spacing: 100}
+            ];
+            
+            layouts.forEach(layout => {
+                layout.plots.forEach((plot, index) => {
+                    if (!plot) return;
+                    
+                    const x = layout.x + (layout.spacing > 80 ? index * layout.spacing : 0);
+                    const y = layout.y + (layout.spacing <= 80 ? index * layout.spacing : 0);
+                    
                     // Create plot rectangle
                     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                     rect.setAttribute('x', x);
                     rect.setAttribute('y', y);
-                    rect.setAttribute('width', width);
-                    rect.setAttribute('height', height);
-                    rect.setAttribute('class', `plot ${plotInfo.status.toLowerCase()}`);
-                    rect.setAttribute('data-plot', plotNum);
+                    rect.setAttribute('width', layout.width);
+                    rect.setAttribute('height', layout.height);
+                    rect.setAttribute('fill', plot.status === 'AVAILABLE' ? '#d4edda' : '#f8d7da');
+                    rect.setAttribute('stroke', '#333');
+                    rect.setAttribute('stroke-width', '2');
                     rect.setAttribute('rx', '5');
+                    rect.setAttribute('data-plot', plot.number);
+                    rect.style.cursor = 'pointer';
+                    rect.style.transition = 'all 0.3s ease';
                     
-                    // Add event listeners
-                    rect.addEventListener('click', () => selectPlot(plotNum));
-                    rect.addEventListener('mouseenter', (e) => showPlotInfo(e, plotInfo));
-                    rect.addEventListener('mouseleave', hidePlotInfo);
+                    // Add click handler
+                    rect.addEventListener('click', () => selectMapPlot(plot));
+                    rect.addEventListener('mouseenter', () => {
+                        rect.setAttribute('stroke', '#667eea');
+                        rect.setAttribute('stroke-width', '4');
+                    });
+                    rect.addEventListener('mouseleave', () => {
+                        rect.setAttribute('stroke', '#333');
+                        rect.setAttribute('stroke-width', '2');
+                    });
                     
                     svg.appendChild(rect);
-
-                    // Create plot text
+                    
+                    // Add plot number
                     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    text.setAttribute('x', x + width/2);
-                    text.setAttribute('y', y + height/2 - 5);
-                    text.setAttribute('class', 'plot-text');
-                    text.textContent = plotNum;
+                    text.setAttribute('x', x + layout.width/2);
+                    text.setAttribute('y', y + layout.height/2 - 5);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('dominant-baseline', 'middle');
+                    text.setAttribute('font-size', '10');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('fill', '#333');
+                    text.textContent = plot.number;
+                    text.style.pointerEvents = 'none';
                     svg.appendChild(text);
-
-                    // Add size text for larger plots
-                    if (width > 30) {
+                    
+                    // Add size for larger plots
+                    if (layout.width > 70) {
                         const sizeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        sizeText.setAttribute('x', x + width/2);
-                        sizeText.setAttribute('y', y + height/2 + 8);
-                        sizeText.setAttribute('class', 'plot-text');
-                        sizeText.setAttribute('font-size', '6');
-                        sizeText.textContent = `${plotInfo.sizeGuntha.toFixed(1)}G`;
+                        sizeText.setAttribute('x', x + layout.width/2);
+                        sizeText.setAttribute('y', y + layout.height/2 + 10);
+                        sizeText.setAttribute('text-anchor', 'middle');
+                        sizeText.setAttribute('font-size', '8');
+                        sizeText.setAttribute('fill', '#666');
+                        sizeText.textContent = `${plot.sizeGuntha.toFixed(1)}G`;
+                        sizeText.style.pointerEvents = 'none';
                         svg.appendChild(sizeText);
                     }
                 });
             });
         }
 
-        function selectPlot(plotNumber) {
-            // Clear previous selection
-            document.querySelectorAll('.plot').forEach(plot => {
-                plot.classList.remove('selected');
-            });
+        // Map plot selection
+        function selectMapPlot(plot) {
+            const panel = document.getElementById('plotInfoPanel');
+            const title = document.getElementById('selectedPlotTitle');
+            const details = document.getElementById('selectedPlotDetails');
             
-            // Select new plot
-            const plotElement = document.querySelector(`[data-plot="${plotNumber}"]`);
-            if (plotElement) {
-                plotElement.classList.add('selected');
-                selectedPlot = plotNumber;
-                
-                // Scroll plot into view (center the SVG viewBox on the plot)
-                const rect = plotElement.getBoundingClientRect();
-                plotElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
-        function showPlotInfo(event, plotInfo) {
-            const tooltip = document.getElementById('plotInfo');
-            tooltip.innerHTML = `
-                <h4>Plot ${plotInfo.number}</h4>
-                <p><strong>Size:</strong> ${plotInfo.sizeGuntha.toFixed(2)} Guntha</p>
-                <p><strong>Area:</strong> ${plotInfo.sizeM.toFixed(2)} sq.m</p>
-                <p><strong>Status:</strong> ${plotInfo.status}</p>
-                ${plotInfo.customer ? `<p><strong>Customer:</strong> ${plotInfo.customer}</p>` : ''}
-                ${plotInfo.remark ? `<p><strong>Remark:</strong> ${plotInfo.remark}</p>` : ''}
+            title.textContent = `Plot ${plot.number} Details`;
+            const totalPrice = (plot.sizeGuntha * plot.pricePerGuntha).toLocaleString('en-IN');
+            
+            details.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div><strong>Size:</strong> ${plot.sizeGuntha.toFixed(2)} Guntha</div>
+                    <div><strong>Area:</strong> ${plot.sizeM.toFixed(0)} sq.m</div>
+                    <div><strong>Status:</strong> 
+                        <span style="color: ${plot.status === 'AVAILABLE' ? '#28a745' : '#dc3545'}">
+                            ${plot.status}
+                        </span>
+                    </div>
+                    <div><strong>Price:</strong> ₹${plot.pricePerGuntha.toLocaleString('en-IN')}/Guntha</div>
+                    <div style="grid-column: 1/-1;"><strong>Total Price:</strong> 
+                        <span style="color: #667eea; font-size: 1.2rem;">₹${totalPrice}</span>
+                    </div>
+                    ${plot.customer ? `<div style="grid-column: 1/-1;"><strong>Customer:</strong> ${plot.customer}</div>` : ''}
+                    ${plot.remark ? `<div style="grid-column: 1/-1;"><strong>Remarks:</strong> ${plot.remark}</div>` : ''}
+                </div>
             `;
             
-            tooltip.style.display = 'block';
-            tooltip.style.left = (event.pageX + 10) + 'px';
-            tooltip.style.top = (event.pageY - 10) + 'px';
-        }
-
-        function hidePlotInfo() {
-            const tooltip = document.getElementById('plotInfo');
-            tooltip.style.display = 'none';
-        }
-
-        function searchPlot() {
-            const searchInput = document.getElementById('plotSearch');
-            const plotNumber = searchInput.value.trim();
+            panel.style.display = 'block';
             
-            if (!plotNumber) {
-                alert('Please enter a plot number');
-                return;
+            // Highlight selected plot
+            document.querySelectorAll('rect[data-plot]').forEach(rect => {
+                rect.setAttribute('stroke', '#333');
+                rect.setAttribute('stroke-width', '2');
+            });
+            
+            const selectedRect = document.querySelector(`rect[data-plot="${plot.number}"]`);
+            if (selectedRect) {
+                selectedRect.setAttribute('stroke', '#ff6b6b');
+                selectedRect.setAttribute('stroke-width', '4');
             }
+        }
+
+        // Search plot on map
+        function searchMapPlot() {
+            const plotNumber = document.getElementById('mapPlotSearch').value.trim();
+            const plot = plotData.find(p => p.number === plotNumber);
             
-            // Find plot in data
-            const plotExists = plotData.find(p => p.number === plotNumber);
-            if (plotExists) {
-                selectPlot(plotNumber);
-                searchInput.value = '';
+            if (plot) {
+                selectMapPlot(plot);
+                document.getElementById('mapPlotSearch').value = '';
             } else {
                 alert(`Plot ${plotNumber} not found`);
             }
         }
 
-        function clearSelection() {
-            document.querySelectorAll('.plot').forEach(plot => {
-                plot.classList.remove('selected');
-            });
-            selectedPlot = null;
-            document.getElementById('plotSearch').value = '';
+        // View plot on map from plots page
+        function viewPlotOnMap(plotNumber) {
+            showPage('map');
+            setTimeout(() => {
+                const plot = plotData.find(p => p.number === plotNumber);
+                if (plot) {
+                    selectMapPlot(plot);
+                }
+            }, 100);
         }
 
-        function zoomIn() {
-            currentZoom = Math.min(currentZoom * 1.2, 3);
-            applyZoom();
-        }
-
-        function zoomOut() {
-            currentZoom = Math.max(currentZoom / 1.2, 0.5);
-            applyZoom();
-        }
-
-        function resetZoom() {
-            currentZoom = 1;
-            applyZoom();
-        }
-
-        function applyZoom() {
-            const svg = document.getElementById('plotMap');
-            svg.style.transform = `scale(${currentZoom})`;
-        }
-
-        function updateStatistics() {
-            const total = plotData.length;
-            const available = plotData.filter(p => p.status === 'AVAILABLE').length;
-            const totalArea = plotData.reduce((sum, plot) => sum + plot.sizeGuntha, 0);
-            const avgSize = totalArea / total;
-
-            document.getElementById('totalPlots').textContent = total;
-            document.getElementById('availablePlots').textContent = available;
-            document.getElementById('totalArea').textContent = totalArea.toFixed(1);
-            document.getElementById('avgSize').textContent = avgSize.toFixed(1);
-        }
-
-        // Allow Enter key to search
-        document.getElementById('plotSearch').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchPlot();
-            }
-        });
-
-        // Initialize the map
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            generatePlots();
-            updateStatistics();
+            // Update home page stats
+            const totalArea = plotData.reduce((sum, plot) => sum + plot.sizeGuntha, 0);
+            document.getElementById('totalAreaHome').textContent = totalArea.toFixed(1);
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('loginModal');
+                if (event.target === modal) {
+                    closeLogin();
+                }
+            };
+            
+            // Enter key support for map search
+            document.getElementById('mapPlotSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchMapPlot();
+                }
+            });
         });
     </script>
 </body>
