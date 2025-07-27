@@ -811,4 +811,638 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
             </form>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Demo: admin/admin
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Demo: admin/admin123 or user/user123</p>
+        </div>
+    </div>
+
+    <!-- Update Plot Modal -->
+    <div id="updatePlotModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUpdatePlotModal()">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 1rem;">Update Plot Status</h2>
+            <form onsubmit="handleUpdatePlot(event)">
+                <div class="form-group">
+                    <label for="plotNumber">Plot Number:</label>
+                    <select id="plotNumber" required>
+                        <option value="">Select Plot</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newStatus">New Status:</label>
+                    <select id="newStatus" required>
+                        <option value="AVAILABLE">Available</option>
+                        <option value="SOLD">Sold</option>
+                        <option value="RESERVED">Reserved</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="customerName">Customer Name:</label>
+                    <input type="text" id="customerName" placeholder="Enter customer name">
+                </div>
+                <div class="form-group">
+                    <label for="plotRemark">Remarks:</label>
+                    <input type="text" id="plotRemark" placeholder="Any additional notes">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Update Plot</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Payment Modal -->
+    <div id="addPaymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddPaymentModal()">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 1rem;">Add Payment</h2>
+            <form onsubmit="handleAddPayment(event)">
+                <div class="form-group">
+                    <label for="paymentPlot">Plot Number:</label>
+                    <select id="paymentPlot" required>
+                        <option value="">Select Plot</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentAmount">Amount (₹):</label>
+                    <input type="number" id="paymentAmount" required placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label for="paymentType">Payment Type:</label>
+                    <select id="paymentType" required>
+                        <option value="token">Token Amount</option>
+                        <option value="deposit">Deposit</option>
+                        <option value="installment">Installment</option>
+                        <option value="final">Final Payment</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" required>
+                        <option value="cash">Cash</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="online">Online Transfer</option>
+                        <option value="card">Card</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Add Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Plot data with enhanced structure
+        const plotData = [
+            {number: "01", sizeM: 1025.51, sizeFt: 11038.59, sizeGuntha: 11.619568, customer: "Atul Gandhi", status: "AVAILABLE", remark: "No updates on Payment", pricePerGuntha: 300000, x: 100, y: 100, width: 80, height: 60},
+            {number: "07", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: "Is this plot sold to Mr Pawar on May 10th 25", pricePerGuntha: 350000, x: 200, y: 100, width: 60, height: 50},
+            {number: "08", sizeM: 556.34, sizeFt: 5988.44, sizeGuntha: 6.303625, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 350000, x: 280, y: 100, width: 60, height: 50},
+            {number: "10", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 320000, x: 360, y: 100, width: 60, height: 50},
+            {number: "11", sizeM: 543.20, sizeFt: 5847.00, sizeGuntha: 6.154742, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 320000, x: 440, y: 100, width: 60, height: 50},
+            {number: "12", sizeM: 533.75, sizeFt: 5745.29, sizeGuntha: 6.047668, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 330000, x: 520, y: 100, width: 60, height: 50},
+            {number: "13", sizeM: 528.99, sizeFt: 5694.05, sizeGuntha: 5.993735, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 340000, x: 600, y: 100, width: 60, height: 50},
+            {number: "14", sizeM: 517.45, sizeFt: 5569.83, sizeGuntha: 5.862981, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 350000, x: 680, y: 100, width: 60, height: 50},
+            {number: "30", sizeM: 461.77, sizeFt: 4970.49, sizeGuntha: 5.232097, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 280000, x: 100, y: 200, width: 55, height: 45},
+            {number: "31", sizeM: 184.99, sizeFt: 1991.23, sizeGuntha: 2.096034, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 450000, x: 180, y: 200, width: 35, height: 30},
+            {number: "32", sizeM: 197.89, sizeFt: 2130.09, sizeGuntha: 2.242198, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 440000, x: 235, y: 200, width: 35, height: 30},
+            {number: "33", sizeM: 209.54, sizeFt: 2255.49, sizeGuntha: 2.374198, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 430000, x: 290, y: 200, width: 35, height: 30},
+            {number: "156", sizeM: 931.22, sizeFt: 10023.65, sizeGuntha: 10.551213, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 280000, x: 100, y: 300, width: 90, height: 70},
+            {number: "157", sizeM: 945.15, sizeFt: 10173.59, sizeGuntha: 10.709047, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 275000, x: 210, y: 300, width: 90, height: 70},
+            {number: "181", sizeM: 1581.38, sizeFt: 17021.97, sizeGuntha: 17.917868, customer: "", status: "AVAILABLE", remark: "", pricePerGuntha: 250000, x: 320, y: 300, width: 120, height: 90}
+        ];
+
+        // Global variables
+        let currentUser = null;
+        let currentPage = 'home';
+        let selectedPlot = null;
+        let payments = []; // Store payment records
+        let activityLog = []; // Store recent activities
+
+        // D3.js map variables
+        let svg, g, zoom, tooltip;
+
+        // Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageName + 'Page').classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            currentPage = pageName;
+            
+            // Load page content
+            if (pageName === 'plots') {
+                loadAllPlots();
+            } else if (pageName === 'map') {
+                setTimeout(() => initializeEnhancedMap(), 100); // Small delay to ensure DOM is ready
+            } else if (pageName === 'admin') {
+                loadAdminDashboard();
+            }
+        }
+
+        // Login functionality
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple authentication
+            if ((username === 'admin' && password === 'admin123') || 
+                (username === 'user' && password === 'user123')) {
+                currentUser = {username: username, role: username};
+                closeLogin();
+                
+                // Show admin link if admin
+                if (username === 'admin') {
+                    document.getElementById('adminLink').style.display = 'block';
+                }
+                
+                // Update login button
+                document.querySelector('.login-btn').textContent = `Welcome, ${username}`;
+                document.querySelector('.login-btn').onclick = logout;
+                
+                // Log activity
+                addActivity(`${username} logged in`);
+                
+                alert(`Welcome, ${username}!`);
+            } else {
+                alert('Invalid credentials. Try admin/admin123 or user/user123');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('adminLink').style.display = 'none';
+            document.querySelector('.login-btn').textContent = 'Login';
+            document.querySelector('.login-btn').onclick = showLogin;
+            showPage('home');
+            addActivity('User logged out');
+        }
+
+        // Load all plots page
+        function loadAllPlots() {
+            const plotsList = document.getElementById('plotsList');
+            plotsList.innerHTML = '';
+            
+            plotData.forEach(plot => {
+                const totalPrice = (plot.sizeGuntha * plot.pricePerGuntha).toLocaleString('en-IN');
+                const sizeCategory = plot.sizeGuntha <= 3 ? 'small' : plot.sizeGuntha <= 7 ? 'medium' : 'large';
+                
+                const plotCard = document.createElement('div');
+                plotCard.style.cssText = `
+                    background: white;
+                    border-radius: 10px;
+                    padding: 1.5rem;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                    transition: transform 0.3s ease;
+                    border-left: 4px solid ${plot.status === 'AVAILABLE' ? '#28a745' : '#dc3545'};
+                `;
+                plotCard.className = `plot-card ${plot.status.toLowerCase()} ${sizeCategory}`;
+                
+                plotCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="color: #667eea; margin: 0;">Plot ${plot.number}</h3>
+                        <span style="background: ${plot.status === 'AVAILABLE' ? '#d4edda' : '#f8d7da'}; 
+                                     color: ${plot.status === 'AVAILABLE' ? '#155724' : '#721c24'}; 
+                                     padding: 0.25rem 0.5rem; border-radius: 15px; font-size: 0.8rem;">
+                            ${plot.status}
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>Size:</strong> ${plot.sizeGuntha.toFixed(2)} Guntha (${plot.sizeM.toFixed(0)} sq.m)</p>
+                        <p><strong>Price:</strong> ₹${plot.pricePerGuntha.toLocaleString('en-IN')}/Guntha</p>
+                        <p style="color: #667eea; font-weight: bold; font-size: 1.1rem;">
+                            <strong>Total: ₹${totalPrice}</strong>
+                        </p>
+                        ${plot.customer ? `<p><strong>Customer:</strong> ${plot.customer}</p>` : ''}
+                        ${plot.remark ? `<p><strong>Note:</strong> ${plot.remark}</p>` : ''}
+                    </div>
+                    <button onclick="viewPlotOnMap('${plot.number}')" 
+                            style="background: #667eea; color: white; border: none; padding: 0.5rem 1rem; 
+                                   border-radius: 5px; cursor: pointer; width: 100%;">
+                        View on Map
+                    </button>
+                `;
+                
+                plotCard.addEventListener('mouseenter', () => {
+                    plotCard.style.transform = 'translateY(-5px)';
+                });
+                plotCard.addEventListener('mouseleave', () => {
+                    plotCard.style.transform = 'translateY(0)';
+                });
+                
+                plotsList.appendChild(plotCard);
+            });
+        }
+
+        // Filter plots in plots page
+        function filterPlots() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sizeFilter = document.getElementById('sizeFilter').value;
+            const plotCards = document.querySelectorAll('.plot-card');
+            
+            plotCards.forEach(card => {
+                let showCard = true;
+                
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'available' && !card.classList.contains('available')) {
+                        showCard = false;
+                    }
+                    if (statusFilter === 'sold' && card.classList.contains('available')) {
+                        showCard = false;
+                    }
+                }
+                
+                if (sizeFilter !== 'all') {
+                    if (!card.classList.contains(sizeFilter)) {
+                        showCard = false;
+                    }
+                }
+                
+                card.style.display = showCard ? 'block' : 'none';
+            });
+        }
+
+        // Enhanced Interactive Map with D3.js
+        function initializeEnhancedMap() {
+            if (svg) return; // Already initialized
+            
+            svg = d3.select("#interactiveMap");
+            const width = 1200;
+            const height = 600;
+            
+            // Create zoom behavior
+            zoom = d3.zoom()
+                .scaleExtent([0.5, 5])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+            
+            svg.call(zoom);
+            
+            // Create main group for zoom/pan
+            g = svg.append("g");
+            
+            // Add background
+            g.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("fill", "#f8f9fa")
+                .attr("stroke", "#ddd")
+                .attr("stroke-width", 2);
+            
+            // Add roads and infrastructure
+            addMapInfrastructure();
+            
+            // Add plots
+            renderEnhancedPlots();
+            
+            // Add compass and scale
+            addMapFeatures();
+        }
+
+        function addMapInfrastructure() {
+            // Roads
+            const roads = [
+                {x1: 80, y1: 80, x2: 80, y2: 520, width: 4},
+                {x1: 160, y1: 80, x2: 160, y2: 520, width: 3},
+                {x1: 240, y1: 80, x2: 240, y2: 520, width: 3},
+                {x1: 320, y1: 80, x2: 320, y2: 520, width: 3},
+                {x1: 400, y1: 80, x2: 400, y2: 520, width: 3},
+                {x1: 480, y1: 80, x2: 480, y2: 420, width: 3},
+                {x1: 60, y1: 180, x2: 500, y2: 180, width: 3},
+                {x1: 60, y1: 280, x2: 500, y2: 280, width: 3},
+                {x1: 60, y1: 420, x2: 800, y2: 420, width: 4}
+            ];
+            
+            g.selectAll(".road")
+                .data(roads)
+                .enter()
+                .append("line")
+                .attr("class", "road")
+                .attr("x1", d => d.x1)
+                .attr("y1", d => d.y1)
+                .attr("x2", d => d.x2)
+                .attr("y2", d => d.y2)
+                .attr("stroke", "#ccc")
+                .attr("stroke-width", d => d.width);
+            
+            // Electric line
+            g.append("line")
+                .attr("x1", 700)
+                .attr("y1", 50)
+                .attr("x2", 700)
+                .attr("y2", 300)
+                .attr("stroke", "#ff6b6b")
+                .attr("stroke-width", 3)
+                .attr("stroke-dasharray", "5,5");
+            
+            g.append("text")
+                .attr("x", 710)
+                .attr("y", 175)
+                .attr("fill", "#ff6b6b")
+                .attr("font-size", "12")
+                .text("Electric Line");
+        }
+
+        function renderEnhancedPlots() {
+            const plots = g.selectAll(".plot-group")
+                .data(plotData)
+                .enter()
+                .append("g")
+                .attr("class", "plot-group");
+            
+            // Add plot rectangles
+            plots.append("rect")
+                .attr("class", "plot-rect")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("width", d => d.width)
+                .attr("height", d => d.height)
+                .attr("rx", 5)
+                .attr("fill", d => getPlotColor(d))
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2)
+                .on("click", function(event, d) {
+                    selectMapPlot(d);
+                })
+                .on("mouseenter", function(event, d) {
+                    d3.select(this)
+                        .attr("stroke", "#667eea")
+                        .attr("stroke-width", 3);
+                    showMapTooltip(event, d);
+                })
+                .on("mouseleave", function(event, d) {
+                    if (selectedPlot?.number !== d.number) {
+                        d3.select(this)
+                            .attr("stroke", "#333")
+                            .attr("stroke-width", 2);
+                    }
+                    hideMapTooltip();
+                });
+            
+            // Add plot numbers
+            plots.append("text")
+                .attr("class", "plot-text")
+                .attr("x", d => d.x + d.width/2)
+                .attr("y", d => d.y + d.height/2 - 5)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "12")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333")
+                .text(d => d.number);
+            
+            // Add size labels for larger plots
+            plots.filter(d => d.width > 70)
+                .append("text")
+                .attr("class", "plot-text size-label")
+                .attr("x", d => d.x + d.width/2)
+                .attr("y", d => d.y + d.height/2 + 10)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10")
+                .attr("fill", "#666")
+                .text(d => `${d.sizeGuntha.toFixed(1)}G`);
+        }
+
+        function getPlotColor(plot) {
+            if (plot.status === "SOLD") return "#f8d7da";
+            
+            const totalPrice = plot.sizeGuntha * plot.pricePerGuntha;
+            if (totalPrice > 7000000) return "#fff3cd"; // Premium
+            return "#d4edda"; // Available
+        }
+
+        function selectMapPlot(plot) {
+            // Remove previous selection
+            g.selectAll(".plot-rect").classed("selected", false)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2);
+            
+            // Highlight selected plot
+            g.selectAll(".plot-rect")
+                .filter(d => d.number === plot.number)
+                .classed("selected", true)
+                .attr("stroke", "#ff6b6b")
+                .attr("stroke-width", 4);
+            
+            selectedPlot = plot;
+            showEnhancedPlotDetails(plot);
+        }
+
+        function showEnhancedPlotDetails(plot) {
+            const panel = document.getElementById("plotInfoPanel");
+            const title = document.getElementById("selectedPlotTitle");
+            const details = document.getElementById("selectedPlotDetails");
+            
+            title.textContent = `Plot ${plot.number} - Detailed Information`;
+            
+            const totalPrice = (plot.sizeGuntha * plot.pricePerGuntha).toLocaleString('en-IN');
+            const sizeCategory = plot.sizeGuntha <= 3 ? 'Small' : plot.sizeGuntha <= 7 ? 'Medium' : 'Large';
+            
+            details.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">Plot Number</div>
+                    <div class="info-value">#${plot.number}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Size (Guntha)</div>
+                    <div class="info-value">${plot.sizeGuntha.toFixed(2)} G</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Area (Sq.M)</div>
+                    <div class="info-value">${plot.sizeM.toFixed(0)} sq.m</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Category</div>
+                    <div class="info-value">${sizeCategory}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value status-${plot.status.toLowerCase()}">${plot.status}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Price per Guntha</div>
+                    <div class="info-value">₹${plot.pricePerGuntha.toLocaleString('en-IN')}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Total Price</div>
+                    <div class="info-value price-highlight">₹${totalPrice}</div>
+                </div>
+                ${plot.customer ? `
+                <div class="info-item">
+                    <div class="info-label">Customer</div>
+                    <div class="info-value">${plot.customer}</div>
+                </div>` : ''}
+                ${plot.remark ? `
+                <div class="info-item" style="grid-column: 1/-1;">
+                    <div class="info-label">Remarks</div>
+                    <div class="info-value">${plot.remark}</div>
+                </div>` : ''}
+            `;
+            
+            panel.classList.add("show");
+        }
+
+        // Map tooltip functions
+        function showMapTooltip(event, plot) {
+            if (tooltip) hideMapTooltip();
+            
+            const totalPrice = (plot.sizeGuntha * plot.pricePerGuntha).toLocaleString('en-IN');
+            
+            tooltip = d3.select("body")
+                .append("div")
+                .style("position", "absolute")
+                .style("background", "rgba(0,0,0,0.8)")
+                .style("color", "white")
+                .style("padding", "10px")
+                .style("border-radius", "5px")
+                .style("font-size", "12px")
+                .style("pointer-events", "none")
+                .style("z-index", "1000")
+                .html(`
+                    <strong>Plot ${plot.number}</strong><br>
+                    Size: ${plot.sizeGuntha.toFixed(1)} Guntha<br>
+                    Price: ₹${totalPrice}<br>
+                    Status: ${plot.status}
+                `)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        }
+
+        function hideMapTooltip() {
+            if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+            }
+        }
+
+        // Map control functions
+        function searchMapPlot() {
+            const plotNumber = document.getElementById("mapPlotSearch").value.trim();
+            const plot = plotData.find(p => p.number === plotNumber);
+            
+            if (plot) {
+                selectMapPlot(plot);
+                // Center on plot with animation
+                const transform = d3.zoomIdentity
+                    .translate(-plot.x + 600, -plot.y + 300)
+                    .scale(2);
+                svg.transition().duration(750).call(zoom.transform, transform);
+                document.getElementById("mapPlotSearch").value = '';
+            } else {
+                alert(`Plot ${plotNumber} not found`);
+            }
+        }
+
+        function zoomIn() {
+            svg.transition().call(zoom.scaleBy, 1.5);
+        }
+
+        function zoomOut() {
+            svg.transition().call(zoom.scaleBy, 1 / 1.5);
+        }
+
+        function resetZoom() {
+            svg.transition().call(zoom.transform, d3.zoomIdentity);
+        }
+
+        function resetMapView() {
+            resetZoom();
+            document.getElementById("mapPlotSearch").value = '';
+            document.getElementById("plotInfoPanel").classList.remove("show");
+            selectedPlot = null;
+            g.selectAll(".plot-rect").classed("selected", false)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2);
+        }
+
+        function applyMapFilters() {
+            const statusFilter = document.getElementById("mapStatusFilter").value;
+            const sizeFilter = document.getElementById("mapSizeFilter").value;
+            
+            g.selectAll(".plot-group").style("display", function(d) {
+                let show = true;
+                
+                // Status filter
+                if (statusFilter !== "all") {
+                    if (statusFilter === "available" && d.status !== "AVAILABLE") show = false;
+                    if (statusFilter === "sold" && d.status !== "SOLD") show = false;
+                }
+                
+                // Size filter
+                if (sizeFilter !== "all") {
+                    if (sizeFilter === "small" && d.sizeGuntha > 3) show = false;
+                    if (sizeFilter === "medium" && (d.sizeGuntha <= 3 || d.sizeGuntha > 7)) show = false;
+                    if (sizeFilter === "large" && d.sizeGuntha <= 7) show = false;
+                }
+                
+                return show ? "block" : "none";
+            });
+        }
+
+        function addMapFeatures() {
+            // Add compass
+            const compass = g.append("g")
+                .attr("class", "compass")
+                .attr("transform", "translate(50, 50)");
+            
+            compass.append("circle")
+                .attr("r", 25)
+                .attr("fill", "rgba(255,255,255,0.9)")
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2);
+            
+            compass.append("polygon")
+                .attr("points", "0,-15 -5,5 0,0 5,5")
+                .attr("fill", "#dc3545");
+            
+            compass.append("text")
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10")
+                .attr("font-weight", "bold")
+                .text("N");
+            
+            // Add scale indicator
+            const scale = g.append("g")
+                .attr("class", "scale")
+                .attr("transform", "translate(50, 500)");
+            
+            scale.append("line")
+                .attr("x1", 0)
+                .attr("x2", 100)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2);
+            
+            scale.append("text")
+                .attr("x", 50)
+                .attr("y", -5)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10")
+                .text("100m");
+        }
+
+        function viewPlotOnMap(plotNumber) {
+            showPage('map');
+            setTimeout(() => {
+                const plot = plotData.find(p => p.number === plotNumber);
+                if (plot) {
+                    selectMapPlot(plot);
+                    // Center on plot
+                    const transform = d3.zoomIdentity
+                        .translate(-plot.x + 600, -plot.y + 300)
+                        .scale(2);
